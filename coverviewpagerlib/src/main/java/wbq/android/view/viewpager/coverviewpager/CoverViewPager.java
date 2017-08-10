@@ -4,35 +4,34 @@ import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
+import android.view.View;
+
+import wbq.android.view.ViewHelper;
+
+import static wbq.android.view.viewpager.coverviewpager.CoverViewPager.Type.NOT_LOOP;
 
 /**
- * A ViewPager subclass enabling infinte scrolling of the viewPager elements
- * 
- * When used for paginating views (in opposite to fragments), no code changes
- * should be needed only change xml's from <android.support.v4.view.ViewPager>
- * to <com.imbryk.viewPager.LoopViewPager>
- * 
- * If "blinking" can be seen when paginating to first or last view, simply call
- * seBoundaryCaching( true ), or change DEFAULT_BOUNDARY_CASHING to true
- * 
- * When using a FragmentPagerAdapter or FragmentStatePagerAdapter,
- * additional changes in the adapter must be done. 
- * The adapter must be prepared to create 2 extra items e.g.:
- * 
- * The original adapter creates 4 items: [0,1,2,3]
- * The modified adapter will have to create 6 items [0,1,2,3,4,5]
- * with mapping realPosition=(position-1)%count
- * [0->3, 1->0, 2->1, 3->2, 4->3, 5->0]
+ * @author wubinqi
  */
-public class LoopViewPager extends ViewPager {
+public class CoverViewPager extends ViewPager {
 
-    private static final boolean DEFAULT_BOUNDARY_CASHING = false;
+    /**
+     * @author wubinqi
+     */
+    public enum Type {
+        /** not an infinite viewpager */
+        NOT_LOOP,
+        /** infinite viewpager and just cache boundary views */
+        LOOP_CACHE_BOUNDARY,
+        /** infinite viewpager and cache all views. but this require at least 3 items */
+        LOOP_CACHE_ALL
+    }
+    private static final Type DEFAULT_BOUNDARY_CASHING = NOT_LOOP;
 
-    OnPageChangeListener mOuterPageChangeListener;
-    private LoopPagerAdapterWrapper mAdapter;
-    private boolean mBoundaryCaching = DEFAULT_BOUNDARY_CASHING;
-    
-    
+    private OnPageChangeListener mOuterPageChangeListener;
+    private PageTransformer mOuterPageTransformer;
+    private CoverPagerAdapter mAdapter;
+
     /**
      * helper function which may be used when implementing FragmentPagerAdapter
      *   
@@ -50,23 +49,20 @@ public class LoopViewPager extends ViewPager {
         return position;
     }
     
-    /**
-     * If set to true, the boundary views (i.e. first and last) will never be destroyed
-     * This may help to prevent "blinking" of some views 
-     * 
-     * @param flag
-     */
-    public void setBoundaryCaching(boolean flag) {
-        mBoundaryCaching = flag;
-        if (mAdapter != null) {
-            mAdapter.setBoundaryCaching(flag);
-        }
+    public void setAdapter(PagerAdapter adapter, CoverViewPager.Type type) {
+        type = null == type ? DEFAULT_BOUNDARY_CASHING : type;
+        mAdapter = new CoverPagerAdapter(adapter);
+        mAdapter.setType(type);
+        super.setAdapter(mAdapter);
+        setCurrentItem(0, false);
     }
 
     @Override
     public void setAdapter(PagerAdapter adapter) {
-        mAdapter = new LoopPagerAdapterWrapper(adapter);
-        mAdapter.setBoundaryCaching(mBoundaryCaching);
+        CoverViewPager.Type type = mAdapter != null ? mAdapter.getType() : DEFAULT_BOUNDARY_CASHING;
+        type = null == type ? DEFAULT_BOUNDARY_CASHING : type;
+        mAdapter = new CoverPagerAdapter(adapter);
+        mAdapter.setType(type);
         super.setAdapter(mAdapter);
         setCurrentItem(0, false);
     }
@@ -98,18 +94,25 @@ public class LoopViewPager extends ViewPager {
         mOuterPageChangeListener = listener;
     };
 
-    public LoopViewPager(Context context) {
+    @Override
+    public void setPageTransformer(boolean reverseDrawingOrder, PageTransformer transformer) {
+        mOuterPageTransformer = transformer;
+        super.setPageTransformer(reverseDrawingOrder, mCoverFadePageTransformer);
+    }
+
+    public CoverViewPager(Context context) {
         super(context);
         init();
     }
 
-    public LoopViewPager(Context context, AttributeSet attrs) {
+    public CoverViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
     }
 
     private void init() {
         super.setOnPageChangeListener(onPageChangeListener);
+        super.setPageTransformer(false, mCoverFadePageTransformer);
     }
 
     private OnPageChangeListener onPageChangeListener = new OnPageChangeListener() {
@@ -161,7 +164,7 @@ public class LoopViewPager extends ViewPager {
         @Override
         public void onPageScrollStateChanged(int state) {
             if (mAdapter != null) {
-                int position = LoopViewPager.super.getCurrentItem();
+                int position = CoverViewPager.super.getCurrentItem();
                 int realPosition = mAdapter.toRealPosition(position);
                 if (state == ViewPager.SCROLL_STATE_IDLE
                         && (position == 0 || position == mAdapter.getCount() - 1)) {
@@ -174,4 +177,25 @@ public class LoopViewPager extends ViewPager {
         }
     };
 
+    private PageTransformer mCoverFadePageTransformer = new PageTransformer() {
+
+        @Override
+        public void transformPage(View page, float position) {
+            int pageWidth = page.getWidth();
+
+            View backgroundView = page;
+            if(backgroundView != null) {
+                if(-1 < position && position <= 0) {
+                    ViewHelper.setTranslationX(backgroundView, pageWidth * -position);
+                    ViewHelper.setAlpha(backgroundView, 1.0f - Math.abs(position));
+                } else {
+                    ViewHelper.setTranslationX(backgroundView, 0);
+                    ViewHelper.setAlpha(backgroundView, 1.0f);
+                }
+            }
+            if (mOuterPageTransformer != null) {
+                mOuterPageTransformer.transformPage(page, position);
+            }
+        }
+    };
 }
