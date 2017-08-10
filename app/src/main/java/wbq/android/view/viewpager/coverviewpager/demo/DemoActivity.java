@@ -25,12 +25,12 @@ public class DemoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutorial);
         pager = (CoverViewPager) findViewById(R.id.pager);
-        pagerAdapter = new ScreenSlidePagerAdapter();
+        pagerAdapter = new DemoPagerAdapter();
         pager.setAdapter(pagerAdapter, CoverViewPager.Type.LOOP_CACHE_ALL);
         mCacheViews = new SparseArray<>();
     }
 
-    private class ScreenSlidePagerAdapter extends PagerAdapter {
+    private class DemoPagerAdapter extends PagerAdapter {
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
