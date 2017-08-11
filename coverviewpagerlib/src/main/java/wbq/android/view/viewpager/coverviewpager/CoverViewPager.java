@@ -31,6 +31,7 @@ public class CoverViewPager extends ViewPager {
     private OnPageChangeListener mOuterPageChangeListener;
     private PageTransformer mOuterPageTransformer;
     private CoverPagerAdapter mAdapter;
+    private float mDurAlpha = 1.0f;
 
     /**
      * helper function which may be used when implementing FragmentPagerAdapter
@@ -87,6 +88,10 @@ public class CoverViewPager extends ViewPager {
         if (getCurrentItem() != item) {
             setCurrentItem(item, true);
         }
+    }
+
+    public void setMinAlpha(float minAlpha) {
+        mDurAlpha = 1f - minAlpha;
     }
 
     @Override
@@ -186,7 +191,7 @@ public class CoverViewPager extends ViewPager {
             View backgroundView = page;
             if(-1 < position && position <= 0) {
                 ViewHelper.setTranslationX(backgroundView, pageWidth * -position);
-                ViewHelper.setAlpha(backgroundView, 1.0f - Math.abs(position));
+                ViewHelper.setAlpha(backgroundView, 1.0f + mDurAlpha * position);
             } else {
                 ViewHelper.setTranslationX(backgroundView, 0);
                 ViewHelper.setAlpha(backgroundView, 1.0f);
