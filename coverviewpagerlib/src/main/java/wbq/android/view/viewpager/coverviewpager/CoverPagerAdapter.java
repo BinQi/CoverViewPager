@@ -1,12 +1,12 @@
 package wbq.android.view.viewpager.coverviewpager;
 
 import android.os.Parcelable;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
+
+import wbq.android.view.viewpager.PagerAdapter;
+import wbq.android.view.viewpager.ViewPager;
 
 /**
  * A PagerAdapter wrapper responsible for providing a proper page to
@@ -111,9 +111,10 @@ final class CoverPagerAdapter extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        int realPosition = (mAdapter instanceof FragmentPagerAdapter || mAdapter instanceof FragmentStatePagerAdapter)
-                ? position
-                : toRealPosition(position);
+//        int realPosition = (mAdapter instanceof FragmentPagerAdapter || mAdapter instanceof FragmentStatePagerAdapter)
+//                ? position
+//                : toRealPosition(position);
+        int realPosition = toRealPosition(position);
 
         switch (mType) {
             case LOOP_CACHE_ALL:
@@ -123,6 +124,11 @@ final class CoverPagerAdapter extends PagerAdapter {
                     ViewGroup parent = (ViewGroup) view.getParent();
                     if (parent != null) {
                         parent.removeView(view);
+                    }
+                    ViewGroup.LayoutParams lp = view.getLayoutParams();
+                    if (lp instanceof ViewPager.LayoutParams) {
+                        ViewPager.LayoutParams ll = (ViewPager.LayoutParams) lp;
+                        ll.position = position;
                     }
                     container.addView(view);
                     return view;
@@ -141,9 +147,10 @@ final class CoverPagerAdapter extends PagerAdapter {
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
-        int realPosition = (mAdapter instanceof FragmentPagerAdapter || mAdapter instanceof FragmentStatePagerAdapter)
-                ? position
-                : toRealPosition(position);
+//        int realPosition = (mAdapter instanceof FragmentPagerAdapter || mAdapter instanceof FragmentStatePagerAdapter)
+//                ? position
+//                : toRealPosition(position);
+        int realPosition = toRealPosition(position);
 
         switch (mType) {
             case LOOP_CACHE_ALL:

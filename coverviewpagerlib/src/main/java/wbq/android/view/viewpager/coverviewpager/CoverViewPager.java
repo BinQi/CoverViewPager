@@ -1,12 +1,12 @@
 package wbq.android.view.viewpager.coverviewpager;
 
 import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.View;
 
 import wbq.android.view.ViewHelper;
+import wbq.android.view.viewpager.PagerAdapter;
+import wbq.android.view.viewpager.ViewPager;
 
 import static wbq.android.view.viewpager.coverviewpager.CoverViewPager.Type.NOT_LOOP;
 
@@ -121,8 +121,8 @@ public class CoverViewPager extends ViewPager {
 
         @Override
         public void onPageSelected(int position) {
-
             int realPosition = mAdapter.toRealPosition(position);
+
             if (mPreviousPosition != realPosition) {
                 mPreviousPosition = realPosition;
                 if (mOuterPageChangeListener != null) {
@@ -184,14 +184,12 @@ public class CoverViewPager extends ViewPager {
             int pageWidth = page.getWidth();
 
             View backgroundView = page;
-            if(backgroundView != null) {
-                if(-1 < position && position <= 0) {
-                    ViewHelper.setTranslationX(backgroundView, pageWidth * -position);
-                    ViewHelper.setAlpha(backgroundView, 1.0f - Math.abs(position));
-                } else {
-                    ViewHelper.setTranslationX(backgroundView, 0);
-                    ViewHelper.setAlpha(backgroundView, 1.0f);
-                }
+            if(-1 < position && position <= 0) {
+                ViewHelper.setTranslationX(backgroundView, pageWidth * -position);
+                ViewHelper.setAlpha(backgroundView, 1.0f - Math.abs(position));
+            } else {
+                ViewHelper.setTranslationX(backgroundView, 0);
+                ViewHelper.setAlpha(backgroundView, 1.0f);
             }
             if (mOuterPageTransformer != null) {
                 mOuterPageTransformer.transformPage(page, position);

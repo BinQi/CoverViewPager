@@ -3,12 +3,12 @@ package wbq.android.view.viewpager.coverviewpager.demo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import wbq.android.view.viewpager.PagerAdapter;
 import wbq.android.view.viewpager.coverviewpager.CoverViewPager;
 
 
