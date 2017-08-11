@@ -1,3 +1,4 @@
 # CoverViewPager
 Slide Coverd ViewPager on Android
-![baidu](http://www.baidu.com/img/bdlogo.gif "百度logo")
+
+![](https://github.com/BinQi/CoverViewPager/blob/master/raw/demo.gif)
