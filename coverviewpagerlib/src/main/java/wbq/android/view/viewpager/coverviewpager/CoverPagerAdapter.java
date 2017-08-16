@@ -116,6 +116,7 @@ final class CoverPagerAdapter extends PagerAdapter {
 //                : toRealPosition(position);
         int realPosition = toRealPosition(position);
 
+        boolean needCache = false;
         switch (mType) {
             case LOOP_CACHE_ALL:
                 CacheItem item = mCaches.get(realPosition);
@@ -133,6 +134,7 @@ final class CoverPagerAdapter extends PagerAdapter {
                     container.addView(view);
                     return view;
                 }
+                needCache = true;
                 break;
             case LOOP_CACHE_BOUNDARY:
                 CacheItem item1 = mCaches.get(position);
@@ -142,7 +144,12 @@ final class CoverPagerAdapter extends PagerAdapter {
                 }
                 break;
         }
-        return mAdapter.instantiateItem(container, realPosition);
+        Object obj = mAdapter.instantiateItem(container, realPosition);
+        if (needCache) {
+            mCaches.put(realPosition, new CacheItem(container, realPosition,
+                    obj));
+        }
+        return obj;
     }
 
     @Override
