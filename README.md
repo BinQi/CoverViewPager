@@ -31,3 +31,4 @@ pager = (CoverViewPager) findViewById(R.id.pager);
 pager.setDirection(false)
 ```
 to change the direction of behavior while sliding.
+![](https://github.com/BinQi/CoverViewPager/blob/master/raw/demo.gif)
