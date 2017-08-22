@@ -25,3 +25,9 @@ public enum Type {
     LOOP_CACHE_ALL
 }
 ```
+You can also use
+```Java
+pager = (CoverViewPager) findViewById(R.id.pager);
+pager.setDirection(false)
+```
+to change the direction of behavior whil sliding.
