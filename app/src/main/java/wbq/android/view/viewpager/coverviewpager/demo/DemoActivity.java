@@ -28,6 +28,7 @@ public class DemoActivity extends Activity {
         pagerAdapter = new DemoPagerAdapter();
         pager.setAdapter(pagerAdapter, CoverViewPager.Type.LOOP_CACHE_ALL);
         pager.setMinAlpha(0.1f);
+        pager.setDirection(false);
         mCacheViews = new SparseArray<>();
     }
 

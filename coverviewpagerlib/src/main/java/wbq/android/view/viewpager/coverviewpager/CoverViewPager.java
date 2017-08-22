@@ -32,6 +32,7 @@ public class CoverViewPager extends ViewPager {
     private PageTransformer mOuterPageTransformer;
     private CoverPagerAdapter mAdapter;
     private float mDurAlpha = 1.0f;
+    private boolean mL2R = true;
 
     /**
      * helper function which may be used when implementing FragmentPagerAdapter
@@ -115,6 +116,18 @@ public class CoverViewPager extends ViewPager {
         init();
     }
 
+    public void setDirection(boolean isL2R) {
+        if (isL2R == mL2R) {
+            return;
+        }
+        mL2R = isL2R;
+        if (mL2R) {
+            super.setPageTransformer(false, mCoverFadePageTransformer);
+        } else {
+            super.setPageTransformer(true, mCoverFadePageTransformer);
+        }
+    }
+
     private void init() {
         super.setOnPageChangeListener(onPageChangeListener);
         super.setPageTransformer(false, mCoverFadePageTransformer);
@@ -189,12 +202,22 @@ public class CoverViewPager extends ViewPager {
             int pageWidth = page.getWidth();
 
             View backgroundView = page;
-            if(-1 < position && position <= 0) {
-                ViewHelper.setTranslationX(backgroundView, pageWidth * -position);
-                ViewHelper.setAlpha(backgroundView, 1.0f + mDurAlpha * position);
+            if (mL2R) {
+                if(-1 < position && position <= 0) {
+                    ViewHelper.setTranslationX(backgroundView, pageWidth * -position);
+                    ViewHelper.setAlpha(backgroundView, 1.0f + mDurAlpha * position);
+                } else {
+                    ViewHelper.setTranslationX(backgroundView, 0);
+                    ViewHelper.setAlpha(backgroundView, 1.0f);
+                }
             } else {
-                ViewHelper.setTranslationX(backgroundView, 0);
-                ViewHelper.setAlpha(backgroundView, 1.0f);
+                if (0 <= position && position < 1) {
+                    ViewHelper.setTranslationX(backgroundView, pageWidth * -position);
+                    ViewHelper.setAlpha(backgroundView, 1.0f - mDurAlpha * position);
+                } else {
+                    ViewHelper.setTranslationX(backgroundView, 0);
+                    ViewHelper.setAlpha(backgroundView, 1.0f);
+                }
             }
             if (mOuterPageTransformer != null) {
                 mOuterPageTransformer.transformPage(page, position);
