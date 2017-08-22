@@ -30,4 +30,4 @@ You can also use
 pager = (CoverViewPager) findViewById(R.id.pager);
 pager.setDirection(false)
 ```
-to change the direction of behavior whil sliding.
+to change the direction of behavior while sliding.
